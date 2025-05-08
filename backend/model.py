@@ -1,10 +1,13 @@
 import pandas as pd
 from sklearn.linear_model import LinearRegression
 import os
+import numpy as np
 
 class MarksPredictor:
     def __init__(self, csv_file="semester_data.csv"):
-        self.csv_file = csv_file
+        # Get the absolute path to the backend directory
+        self.backend_dir = os.path.dirname(os.path.abspath(__file__))
+        self.csv_file = os.path.join(self.backend_dir, csv_file)
         self.model = LinearRegression()
         self.initialize_data_file()
 
@@ -16,7 +19,14 @@ class MarksPredictor:
     def get_all_semesters(self):
         if not os.path.exists(self.csv_file):
             return []
-        return pd.read_csv(self.csv_file).to_dict('records')
+        data = pd.read_csv(self.csv_file)
+        # Convert DataFrame to list of dictionaries with native Python types
+        return data.astype({
+            'semester': 'int',
+            'marks': 'int',
+            'subject': 'str',
+            'year': 'int'
+        }).to_dict('records')
 
     def add_semester_data(self, semester_data):
         df = pd.DataFrame([semester_data])
@@ -24,6 +34,21 @@ class MarksPredictor:
             df.to_csv(self.csv_file, mode='a', header=False, index=False)
         else:
             df.to_csv(self.csv_file, index=False)
+
+    def delete_semester(self, semester):
+        if not os.path.exists(self.csv_file):
+            return False
+        
+        data = pd.read_csv(self.csv_file)
+        if len(data) == 0:
+            return False
+        
+        # Find and remove the semester
+        data = data[data['semester'] != semester]
+        
+        # Save the updated data
+        data.to_csv(self.csv_file, index=False)
+        return True
 
     def train_model(self):
         if not os.path.exists(self.csv_file):
@@ -48,7 +73,8 @@ class MarksPredictor:
         
         future_semester = [[len(data) + 1]]
         predicted_marks = self.model.predict(future_semester)[0]
-        return round(predicted_marks, 2)
+        # Convert numpy float to Python float
+        return float(round(predicted_marks, 2))
 
     def get_semester_stats(self):
         if not os.path.exists(self.csv_file):
@@ -58,11 +84,12 @@ class MarksPredictor:
         if len(data) == 0:
             return None
         
+        # Convert numpy types to Python native types
         return {
-            "average": round(data["marks"].mean(), 2),
-            "highest": round(data["marks"].max(), 2),
-            "lowest": round(data["marks"].min(), 2),
-            "total_semesters": len(data)
+            "average": float(round(data["marks"].mean(), 2)),
+            "highest": int(data["marks"].max()),
+            "lowest": int(data["marks"].min()),
+            "total_semesters": int(len(data))
         }
 
 # Create an instance of the model for use in Flask
