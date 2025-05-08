@@ -1,28 +1,65 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <title>GradeScope AI</title>
     <style>
+        :root[data-theme="light"] {
+            --bg-color: #f4f4f4;
+            --text-color: #333;
+            --container-bg: white;
+            --border-color: #ddd;
+            --shadow-color: rgba(0, 0, 0, 0.2);
+            --input-bg: white;
+            --input-border: #ccc;
+            --button-bg: #007bff;
+            --button-hover: #0056b3;
+            --stat-bg: #f8f9fa;
+            --prediction-bg: #e3f2fd;
+            --error-bg: #f8d7da;
+            --error-border: #f5c6cb;
+        }
+
+        :root[data-theme="dark"] {
+            --bg-color: #1a1a1a;
+            --text-color: #ffffff;
+            --container-bg: #2d2d2d;
+            --border-color: #404040;
+            --shadow-color: rgba(0, 0, 0, 0.4);
+            --input-bg: #3d3d3d;
+            --input-border: #505050;
+            --button-bg: #0d6efd;
+            --button-hover: #0b5ed7;
+            --stat-bg: #3d3d3d;
+            --prediction-bg: #1a3a5f;
+            --error-bg: #4a1f1f;
+            --error-border: #5c2525;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            background: #f4f4f4;
+            font-family: "Poppins", sans-serif;
+            background: var(--bg-color);
+            color: var(--text-color);
             text-align: center;
             padding: 20px;
             max-width: 1200px;
             margin: 0 auto;
+            transition: background-color 0.3s, color 0.3s;
         }
 
         h1 {
-            color: #333;
+            color: var(--text-color);
             font-size: 2em;
             margin-bottom: 10px;
         }
 
         p {
             font-size: 1.2em;
-            color: #666;
+            color: var(--text-color);
             margin-bottom: 30px;
         }
 
@@ -34,12 +71,13 @@
         }
 
         .form-container, .history-container, .stats-container {
-            background: white;
+            background: var(--container-bg);
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 8px var(--shadow-color);
             flex: 1;
             min-width: 300px;
+            transition: background-color 0.3s, box-shadow 0.3s;
         }
 
         .form-container {
@@ -51,19 +89,23 @@
             margin: 10px 0 5px;
             font-weight: bold;
             text-align: left;
+            color: var(--text-color);
         }
 
         input, select {
             width: 100%;
             padding: 8px;
             margin-bottom: 15px;
-            border: 1px solid #ccc;
+            border: 1px solid var(--input-border);
             border-radius: 5px;
             box-sizing: border-box;
+            background: var(--input-bg);
+            color: var(--text-color);
+            transition: background-color 0.3s, border-color 0.3s;
         }
 
         button {
-            background: #007bff;
+            background: var(--button-bg);
             color: white;
             padding: 10px 20px;
             border: none;
@@ -71,10 +113,11 @@
             cursor: pointer;
             font-size: 1em;
             width: 100%;
+            transition: background-color 0.3s;
         }
 
         button:hover {
-            background: #0056b3;
+            background: var(--button-hover);
         }
 
         table {
@@ -84,13 +127,15 @@
         }
 
         th, td {
-            padding: 10px;
-            border: 1px solid #ddd;
+            padding: 5px;
+            border: 1px solid var(--border-color);
+            font-size: 15px;
             text-align: left;
+            color: var(--text-color);
         }
 
         th {
-            background-color: #f5f5f5;
+            background-color: var(--stat-bg);
         }
 
         .stats-grid {
@@ -101,56 +146,108 @@
         }
 
         .stat-box {
-            background: #f8f9fa;
+            background: var(--stat-bg);
             padding: 15px;
             border-radius: 5px;
             text-align: center;
+            transition: background-color 0.3s;
         }
 
         .stat-value {
             font-size: 1.5em;
             font-weight: bold;
-            color: #007bff;
+            color: var(--button-bg);
         }
 
         .stat-label {
-            color: #666;
+            color: var(--text-color);
             font-size: 0.9em;
         }
 
         .prediction-box {
-            background: #e3f2fd;
+            background: var(--prediction-bg);
             padding: 15px;
             border-radius: 5px;
             margin-top: 20px;
+            transition: background-color 0.3s;
         }
 
-        .error {
+        .error-message {
             color: #dc3545;
-            margin-top: 10px;
+            background-color: var(--error-bg);
+            border: 1px solid var(--error-border);
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            display: none;
         }
 
         .success {
             color: #28a745;
             margin-top: 10px;
         }
+
+        .theme-switch {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--button-bg);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            transition: background-color 0.3s;
+        }
+
+        .theme-switch:hover {
+            background: var(--button-hover);
+        }
+
+        .delete-btn {
+            background: #dc3545;
+            width: 40px;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background-color 0.3s;
+        }
+
+        .delete-btn:hover {
+            background: #c82333;
+        }
+
+        .delete-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body>
-    <h1>GradeScope AI</h1>
-    <p>- by Siddhesh Umesh Sarang</p>
+    <button class="theme-switch" id="themeSwitch" title="Toggle Dark/Light Mode">🌓</button>
+    <h1><span style="color: grey;">GradeScope </span>AI</h1>
+    <p>- by Siddhesh Umesh Sarang &copy;</p>
 
     <div class="container">
         <div class="form-container">
             <h2>Add Semester Data</h2>
+            <div id="errorMessage" class="error-message"></div>
             <form id="semesterForm">
                 <label for="semester">Semester:</label>
                 <input type="number" id="semester" name="semester" required min="1">
                 
                 <label for="marks">Marks:</label>
-                <input type="number" id="marks" name="marks" required min="0" max="100">
+                <input type="number" id="marks" name="marks" required min="0">
                 
-                <label for="subject">Subject:</label>
+                <label for="subject">Major:</label>
                 <input type="text" id="subject" name="subject" required>
                 
                 <label for="year">Year:</label>
@@ -168,8 +265,9 @@
                     <tr>
                         <th>Semester</th>
                         <th>Marks</th>
-                        <th>Subject</th>
+                        <th>Major</th>
                         <th>Year</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -204,6 +302,31 @@
     </div>
 
     <script>
+        // Theme switching functionality
+        const themeSwitch = document.getElementById('themeSwitch');
+        const html = document.documentElement;
+        
+        // Check for saved theme preference
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        html.setAttribute('data-theme', savedTheme);
+        
+        themeSwitch.addEventListener('click', () => {
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
+
+        // Function to show error message
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+
         // Function to load semester history
         function loadSemesterHistory() {
             fetch('/semesters')
@@ -219,12 +342,22 @@
                                 <td>${semester.marks}</td>
                                 <td>${semester.subject}</td>
                                 <td>${semester.year}</td>
+                                <td>
+                                    <button class="delete-btn" onclick="deleteSemester(${semester.semester})" title="Delete this semester">
+                                        Del
+                                    </button>
+                                </td>
                             `;
                             tbody.appendChild(row);
                         });
+                    } else {
+                        showError(data.message || 'Error loading semester history');
                     }
                 })
-                .catch(error => console.error('Error loading semester history:', error));
+                .catch(error => {
+                    console.error('Error loading semester history:', error);
+                    showError('Error loading semester history');
+                });
         }
 
         // Function to update statistics and prediction
@@ -238,14 +371,70 @@
                         document.getElementById('highestMarks').textContent = data.stats.highest;
                         document.getElementById('lowestMarks').textContent = data.stats.lowest;
                         document.getElementById('totalSemesters').textContent = data.stats.total_semesters;
+                    } else {
+                        showError(data.message || 'Error updating statistics');
                     }
                 })
-                .catch(error => console.error('Error updating stats:', error));
+                .catch(error => {
+                    console.error('Error updating stats:', error);
+                    showError('Error updating statistics');
+                });
+        }
+
+        // Function to delete a semester
+        function deleteSemester(semester) {
+            if (!confirm(`Are you sure you want to delete semester ${semester}?`)) {
+                return;
+            }
+
+            fetch(`/delete/${semester}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    showError(data.message);
+                    loadSemesterHistory();
+                    updateStats();
+                } else {
+                    showError(data.message || 'Error deleting semester');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showError('Error deleting semester. Please try again.');
+            });
         }
 
         // Handle form submission
         document.getElementById('semesterForm').addEventListener('submit', function(event) {
             event.preventDefault();
+            
+            // Validate form data
+            const semester = document.getElementById('semester').value;
+            const marks = document.getElementById('marks').value;
+            const subject = document.getElementById('subject').value;
+            const year = document.getElementById('year').value;
+
+            if (!semester || !marks || !subject || !year) {
+                showError('Please fill in all fields');
+                return;
+            }
+
+            if (semester < 1) {
+                showError('Semester must be 1 or higher');
+                return;
+            }
+
+            if (marks < 0) {
+                showError('Marks cannot be negative');
+                return;
+            }
+
+            if (year < 2000 || year > 2100) {
+                showError('Year must be between 2000 and 2100');
+                return;
+            }
             
             const formData = new FormData(this);
             const messageDiv = document.getElementById('formMessage');
@@ -263,14 +452,12 @@
                     loadSemesterHistory();
                     updateStats();
                 } else {
-                    messageDiv.textContent = data.message;
-                    messageDiv.className = 'error';
+                    showError(data.message || 'Error submitting data');
                 }
             })
             .catch(error => {
-                messageDiv.textContent = 'Error submitting data';
-                messageDiv.className = 'error';
                 console.error('Error:', error);
+                showError('Error submitting data. Please try again.');
             });
         });
 
