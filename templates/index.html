@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GradeScope AI</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            text-align: center;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        p {
+            font-size: 1.2em;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .form-container, .history-container, .stats-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .form-container {
+            max-width: 400px;
+        }
+
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+            text-align: left;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            width: 100%;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f5f5f5;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .stat-box {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .prediction-box {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        .error {
+            color: #dc3545;
+            margin-top: 10px;
+        }
+
+        .success {
+            color: #28a745;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>GradeScope AI</h1>
+    <p>- by Siddhesh Umesh Sarang</p>
+
+    <div class="container">
+        <div class="form-container">
+            <h2>Add Semester Data</h2>
+            <form id="semesterForm">
+                <label for="semester">Semester:</label>
+                <input type="number" id="semester" name="semester" required min="1">
+                
+                <label for="marks">Marks:</label>
+                <input type="number" id="marks" name="marks" required min="0" max="100">
+                
+                <label for="subject">Subject:</label>
+                <input type="text" id="subject" name="subject" required>
+                
+                <label for="year">Year:</label>
+                <input type="number" id="year" name="year" required min="2000" max="2100" value="2024">
+                
+                <button type="submit">Submit</button>
+            </form>
+            <div id="formMessage"></div>
+        </div>
+
+        <div class="history-container">
+            <h2>Semester History</h2>
+            <table id="semesterTable">
+                <thead>
+                    <tr>
+                        <th>Semester</th>
+                        <th>Marks</th>
+                        <th>Subject</th>
+                        <th>Year</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <div class="stats-container">
+            <h2>Statistics & Prediction</h2>
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-value" id="averageMarks">-</div>
+                    <div class="stat-label">Average Marks</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="highestMarks">-</div>
+                    <div class="stat-label">Highest Marks</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="lowestMarks">-</div>
+                    <div class="stat-label">Lowest Marks</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="totalSemesters">-</div>
+                    <div class="stat-label">Total Semesters</div>
+                </div>
+            </div>
+            <div class="prediction-box">
+                <h3>Next Semester Prediction</h3>
+                <div class="stat-value" id="predictedMarks">-</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Function to load semester history
+        function loadSemesterHistory() {
+            fetch('/semesters')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        const tbody = document.querySelector('#semesterTable tbody');
+                        tbody.innerHTML = '';
+                        data.data.forEach(semester => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${semester.semester}</td>
+                                <td>${semester.marks}</td>
+                                <td>${semester.subject}</td>
+                                <td>${semester.year}</td>
+                            `;
+                            tbody.appendChild(row);
+                        });
+                    }
+                })
+                .catch(error => console.error('Error loading semester history:', error));
+        }
+
+        // Function to update statistics and prediction
+        function updateStats() {
+            fetch('/predict')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        document.getElementById('predictedMarks').textContent = data.predicted_marks;
+                        document.getElementById('averageMarks').textContent = data.stats.average;
+                        document.getElementById('highestMarks').textContent = data.stats.highest;
+                        document.getElementById('lowestMarks').textContent = data.stats.lowest;
+                        document.getElementById('totalSemesters').textContent = data.stats.total_semesters;
+                    }
+                })
+                .catch(error => console.error('Error updating stats:', error));
+        }
+
+        // Handle form submission
+        document.getElementById('semesterForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const formData = new FormData(this);
+            const messageDiv = document.getElementById('formMessage');
+            
+            fetch('/submit', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    messageDiv.textContent = data.message;
+                    messageDiv.className = 'success';
+                    this.reset();
+                    loadSemesterHistory();
+                    updateStats();
+                } else {
+                    messageDiv.textContent = data.message;
+                    messageDiv.className = 'error';
+                }
+            })
+            .catch(error => {
+                messageDiv.textContent = 'Error submitting data';
+                messageDiv.className = 'error';
+                console.error('Error:', error);
+            });
+        });
+
+        // Initial load
+        loadSemesterHistory();
+        updateStats();
+    </script>
+</body>
+</html>
