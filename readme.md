@@ -7,7 +7,6 @@ This project enables students to input their academic data, store it in a CSV fi
 - **Data Collection:** Users submit semester marks via an HTML form.
 - **CSV Storage:** Entered data is appended to a shared CSV file for processing.
 - **Machine Learning:** A *Linear Regression* model forecasts expected marks for upcoming semesters.
-- **Frontend Validation data entry by restricting marks between 0-100 and requiring positive values.
 
 ## 🏗 Tech Stack
 - **Python** (Flask for web handling)
